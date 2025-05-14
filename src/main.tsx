@@ -15,6 +15,7 @@ import { fetchToDos } from "./mockImplementations/mockAPIs.ts";
 import { Todo } from "./mockImplementations/mockData.ts";
 import Home from "./Home.tsx";
 import Details from "./Details.tsx";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export interface SingleTodoHandle {
   getTitle: (todo?: Todo) => string | undefined;
@@ -46,11 +47,13 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
-
+const queryClient = new QueryClient();
 createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
-    <ThemeProvider>
-      <RouterProvider router={router} />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+    </QueryClientProvider>
   </StrictMode>
 );
