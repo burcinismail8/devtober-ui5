@@ -1,16 +1,20 @@
-import '@ui5/webcomponents-react/dist/Assets.js';
-import ErrorScreenIllustration from '@ui5/webcomponents-fiori/dist/illustrations/ErrorScreen.js';
-import { BreadcrumbsItem, IllustratedMessage, ThemeProvider } from '@ui5/webcomponents-react';
-import { ReactNode, StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, LoaderFunctionArgs } from 'react-router';
-import { RouterProvider } from 'react-router/dom';
-import './index.css';
-import AppShell from './AppShell.tsx';
-import { fetchToDos } from './mockImplementations/mockAPIs.ts';
-import { Todo } from './mockImplementations/mockData.ts';
-import TodoDetails from './TodoDetails.tsx';
-import ToDos from './ToDos.tsx';
+import "@ui5/webcomponents-react/dist/Assets.js";
+import ErrorScreenIllustration from "@ui5/webcomponents-fiori/dist/illustrations/ErrorScreen.js";
+import {
+  BreadcrumbsItem,
+  IllustratedMessage,
+  ThemeProvider,
+} from "@ui5/webcomponents-react";
+import { ReactNode, StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, LoaderFunctionArgs } from "react-router";
+import { RouterProvider } from "react-router/dom";
+import "./index.css";
+import App from "./AppShell.tsx";
+import { fetchToDos } from "./mockImplementations/mockAPIs.ts";
+import { Todo } from "./mockImplementations/mockData.ts";
+import Home from "./Home.tsx";
+import Details from "./Details.tsx";
 
 export interface SingleTodoHandle {
   getTitle: (todo?: Todo) => string | undefined;
@@ -23,53 +27,27 @@ async function toDosLoader() {
   return { todos: todosPromise };
 }
 
-async function singleToDoLoader({ params }: LoaderFunctionArgs) {
-  if (!params.id) {
-    return null;
-  }
-  const todos = (await fetchToDos()) as Todo[];
-  const paramId = parseInt(params.id, 10);
-  return todos.find((item) => item.id === paramId) ?? null;
-}
-
 export const router = createBrowserRouter([
   {
-    element: <AppShell />,
+    element: <App />,
     children: [
       {
-        path: '/',
-        element: <ToDos />,
+        path: "/",
+        element: <Home />,
         errorElement: <IllustratedMessage name={ErrorScreenIllustration} />,
-        loader: toDosLoader
+        loader: toDosLoader,
       },
       {
-        path: 'todo/:id',
-        loader: singleToDoLoader,
-        element: <TodoDetails />,
-        handle: {
-          getTitle: (todo?: Todo) => todo?.title,
-          getBreadCrumbItems: (todo?: Todo) => {
-            if (!todo) {
-              return null;
-            }
-            return (
-              <>
-                <BreadcrumbsItem href="/" target="_self">
-                  Home
-                </BreadcrumbsItem>
-                <BreadcrumbsItem href={`/todo/${todo.id}`} target="_self">
-                  {todo.title}
-                </BreadcrumbsItem>
-              </>
-            );
-          }
-        }
-      }
-    ]
-  }
+        path: "/details/:movieId",
+        element: <Details />,
+        errorElement: <IllustratedMessage name={ErrorScreenIllustration} />,
+        loader: toDosLoader,
+      },
+    ],
+  },
 ]);
 
-createRoot(document.getElementById('root') as HTMLElement).render(
+createRoot(document.getElementById("root") as HTMLElement).render(
   <StrictMode>
     <ThemeProvider>
       <RouterProvider router={router} />
